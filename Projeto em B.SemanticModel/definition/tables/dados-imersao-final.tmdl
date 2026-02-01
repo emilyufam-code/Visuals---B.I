@@ -1,0 +1,162 @@
+table dados-imersao-final
+	lineageTag: 9ddd7bef-2739-41c8-861b-401972066f4c
+
+	column ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 076bb173-c2db-4916-8ff5-943c6a4b7ae3
+		summarizeBy: sum
+		sourceColumn: ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column senioridade
+		dataType: string
+		lineageTag: 5ce717fe-1982-44fb-8d54-661d25c57783
+		summarizeBy: none
+		sourceColumn: senioridade
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation __PBI_SemanticLinks = [{"LinkTarget":{"TableName":"dados-imersao-final","TableItemName":"senioridade (grupos)","ObjectType":4},"LinkType":"UsedInGroup"}]
+
+	column contrato
+		dataType: string
+		lineageTag: 0ef942b8-022f-4205-a0ff-0ec1ad441428
+		summarizeBy: none
+		sourceColumn: contrato
+
+		annotation SummarizationSetBy = Automatic
+
+	column cargo
+		dataType: string
+		lineageTag: efa828ad-32af-45e0-9c95-2d1c0ea7d140
+		summarizeBy: none
+		sourceColumn: cargo
+
+		annotation SummarizationSetBy = Automatic
+
+	column salario
+		dataType: int64
+		formatString: 0
+		lineageTag: 823782a5-4810-4e4b-84bd-e339151bea32
+		summarizeBy: sum
+		sourceColumn: salario
+
+		annotation SummarizationSetBy = Automatic
+
+	column moeda
+		dataType: string
+		lineageTag: e6d723e1-5b06-4365-8f35-63b68474470f
+		summarizeBy: none
+		sourceColumn: moeda
+
+		annotation SummarizationSetBy = Automatic
+
+	column usd
+		dataType: int64
+		formatString: 0
+		lineageTag: 1024ddaf-5f43-4860-be2b-42d124201086
+		summarizeBy: sum
+		sourceColumn: usd
+
+		annotation SummarizationSetBy = Automatic
+
+	column residencia
+		dataType: string
+		lineageTag: abba7768-7b6f-4a4c-b93b-22ce022a6c9b
+		summarizeBy: none
+		sourceColumn: residencia
+
+		annotation SummarizationSetBy = Automatic
+
+	column remoto
+		dataType: string
+		lineageTag: 188d5d2d-aac5-4faa-b448-390d5757df48
+		summarizeBy: none
+		sourceColumn: remoto
+
+		annotation SummarizationSetBy = Automatic
+
+	column empresa
+		dataType: string
+		lineageTag: fd90b571-04a8-48ed-8f98-b52c82fd7d46
+		summarizeBy: none
+		sourceColumn: empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column tamanho_empresa
+		dataType: string
+		lineageTag: de0a69f5-ed6f-40a3-9723-0828fa504ac5
+		summarizeBy: none
+		sourceColumn: tamanho_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column residencia_iso3
+		dataType: string
+		lineageTag: 0e394f52-80c4-4d5c-8a85-00ed32c20474
+		summarizeBy: none
+		sourceColumn: residencia_iso3
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'senioridade (grupos)' =
+			SWITCH(
+				TRUE,
+				ISBLANK('dados-imersao-final'[senioridade]),
+				"(Em branco)",
+				'dados-imersao-final'[senioridade] IN {"executivo"},
+				"executivo",
+				'dados-imersao-final'[senioridade] IN {"junior"},
+				"junior",
+				'dados-imersao-final'[senioridade] IN {"pleno"},
+				"pleno",
+				'dados-imersao-final'[senioridade] IN {"senior"},
+				"senior",
+				'dados-imersao-final'[senioridade]
+			)
+		lineageTag: d6bb3b8e-d29f-4d8e-87c3-9b8869849ed7
+		summarizeBy: none
+
+		extendedProperty GroupingMetadata =
+				{
+				  "version": 0,
+				  "groupedColumns": [
+				    {
+				      "Column": {
+				        "Expression": {
+				          "SourceRef": {
+				            "Entity": "dados-imersao-final"
+				          }
+				        },
+				        "Property": "senioridade"
+				      }
+				    }
+				  ]
+				}
+
+		annotation GroupingDesignState = {"Version":0,"Sources":[{"Name":"d","Entity":"dados-imersao-final"}],"GroupedColumns":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"senioridade"}}],"GroupItems":[{"DisplayName":"(Em branco)","BlankDefaultPlaceholder":true},{"DisplayName":"executivo","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"senioridade"}}],"Values":[[{"Literal":{"Value":"'executivo'"}}]]}}},{"DisplayName":"junior","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"senioridade"}}],"Values":[[{"Literal":{"Value":"'junior'"}}]]}}},{"DisplayName":"pleno","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"senioridade"}}],"Values":[[{"Literal":{"Value":"'pleno'"}}]]}}},{"DisplayName":"senior","Expression":{"In":{"Expressions":[{"Column":{"Expression":{"SourceRef":{"Source":"d"}},"Property":"senioridade"}}],"Values":[[{"Literal":{"Value":"'senior'"}}]]}}}]}
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'senioridade (grupos) Hierarquia'
+		lineageTag: b4829d00-4b12-4e42-a420-17fe9ff5e033
+
+		level 'senioridade (grupos)'
+			lineageTag: d12d1bf5-ee2c-4236-b49d-928bd4784c36
+			column: 'senioridade (grupos)'
+
+	partition dados-imersao-final = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\Emily\Desktop\Py-imersão\dados-imersao-final.csv"),[Delimiter=",", Columns=12, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"ano", Int64.Type}, {"senioridade", type text}, {"contrato", type text}, {"cargo", type text}, {"salario", Int64.Type}, {"moeda", type text}, {"usd", Int64.Type}, {"residencia", type text}, {"remoto", type text}, {"empresa", type text}, {"tamanho_empresa", type text}, {"residencia_iso3", type text}})
+				in
+				    #"Tipo Alterado"
+
+	annotation PBI_ResultType = Table
+
